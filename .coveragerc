@@ -1,5 +1,5 @@
 [run]
-source = llm_query
+source = llmeasy
 omit = 
     tests/*
     */__init__.py

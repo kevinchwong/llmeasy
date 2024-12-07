@@ -1,6 +1,6 @@
 import asyncio
 import json
-from llm_query import LLMQuery
+from llmeasy import LLMEasy
 from dotenv import load_dotenv
 import os
 from templates.comparison_templates import CODE_ANALYSIS_TEMPLATE
@@ -18,13 +18,13 @@ if not OPENAI_API_KEY:
 async def main():
     """Example comparing responses from different providers"""
     try:
-        claude = LLMQuery(
+        claude = LLMEasy(
             provider='claude',
             api_key=ANTHROPIC_API_KEY,
             temperature=0.7
         )
         
-        openai = LLMQuery(
+        openai = LLMEasy(
             provider='openai',
             api_key=OPENAI_API_KEY,
             model='gpt-4-turbo-preview',

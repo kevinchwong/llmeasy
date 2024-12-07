@@ -1,7 +1,20 @@
+import warnings
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from llm_query import LLMQuery
+from llmeasy import LLMEasy
 from typing import AsyncIterator, List, Any
+
+# Filter out all Google Protobuf related deprecation warnings
+warnings.filterwarnings(
+    "ignore",
+    category=DeprecationWarning,
+    module="google._upb._message"
+)
+warnings.filterwarnings(
+    "ignore",
+    category=DeprecationWarning,
+    message=".*PyType_Spec.*"
+)
 
 class AsyncIteratorMock:
     """Mock async iterator for streaming responses"""
@@ -82,4 +95,40 @@ def mock_settings():
         openai_model="gpt-4-turbo-preview",
         max_tokens=1000,
         temperature=0.7
-    ) 
+    )
+
+@pytest.fixture
+def mock_gemini_stream_response():
+    """Mock streaming response from Gemini"""
+    return AsyncIteratorMock([
+        MagicMock(text="chunk1"),
+        MagicMock(text="chunk2")
+    ])
+
+@pytest.fixture
+def mock_mistral_stream_response():
+    """Mock streaming response from Mistral"""
+    return AsyncIteratorMock([
+        MagicMock(delta="chunk1"),
+        MagicMock(delta="chunk2")
+    ])
+
+@pytest.fixture
+def mock_gemini_client():
+    """Mock Gemini client"""
+    client = MagicMock()
+    generate_mock = AsyncMock()
+    generate_mock.return_value = MagicMock(text='{"test": "response"}')
+    generate_mock.side_effect = None
+    client.generate_content_async = generate_mock
+    return client
+
+@pytest.fixture
+def mock_mistral_client():
+    """Mock Mistral client"""
+    client = MagicMock()
+    chat_mock = AsyncMock()
+    chat_mock.return_value = MagicMock(content='{"test": "response"}')
+    chat_mock.side_effect = None
+    client.chat_async = chat_mock
+    return client

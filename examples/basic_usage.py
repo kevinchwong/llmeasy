@@ -1,5 +1,5 @@
 import asyncio
-from llm_query import LLMQuery
+from llmeasy import LLMEasy
 from dotenv import load_dotenv
 import os
 from templates.basic_templates import STORY_TEMPLATE, SENTENCE_ANALYSIS_TEMPLATE
@@ -11,7 +11,7 @@ if not ANTHROPIC_API_KEY:
     raise ValueError("ANTHROPIC_API_KEY environment variable is not set")
 
 async def basic_example():
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY
     )
@@ -32,7 +32,7 @@ async def basic_example():
         print(f"Error in basic example: {e}")
 
 async def json_example():
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY
     )

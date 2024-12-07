@@ -1,28 +1,29 @@
 [tool.poetry]
-name = "ai-robust-llm"
+name = "llmeasy"
 version = "0.1.0"
-description = "A flexible Python library for querying different LLM providers with templated inputs and outputs"
-authors = ["Your Name <your.email@example.com>"]
+description = "A flexible framework for integrating multiple AI chat providers"
+authors = ["Kevin Wong <kevinchwong@gmail.com>"]
+license = "Apache License 2.0"
 readme = "README.md"
-packages = [{include = "llm_query"}]
+packages = [{include = "llmeasy"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
-anthropic = "^0.40.0"
+python = "^3.8"
 openai = "^1.12.0"
-python-dotenv = "^1.0.0"
-pydantic = "^2.6.1"
-pydantic-settings = "^2.1.0"
-aiohttp = "^3.9.1"
+anthropic = "^0.18.1"
+google-generativeai = "^0.3.2"
+mistralai = "^0.0.12"
+python-dotenv = "^1.0.1"
+aiohttp = "^3.9.3"
+typing-extensions = "^4.9.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-asyncio = "^0.23.5"
+black = "^24.1.1"
+isort = "^5.13.2"
+mypy = "^1.8.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.black]
-line-length = 88
-target-version = ['py39']
-
-[tool.isort]
-profile = "black"
-multi-line-output = 3 

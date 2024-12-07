@@ -1,6 +1,6 @@
 import asyncio
-from llm_query import LLMQuery
-from llm_query.templates import PromptTemplate
+from llmeasy import LLMEasy
+from llmeasy.templates import PromptTemplate
 from dotenv import load_dotenv
 import os
 from templates.custom_templates import ANALYSIS_TEMPLATE, COMPARISON_TEMPLATE
@@ -12,7 +12,7 @@ if not ANTHROPIC_API_KEY:
     raise ValueError("ANTHROPIC_API_KEY environment variable is not set")
 
 async def literary_analysis():
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY
     )
@@ -34,7 +34,7 @@ async def literary_analysis():
     print("Literary Analysis:", response)
 
 async def product_comparison():
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY
     )

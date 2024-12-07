@@ -2,7 +2,7 @@ import json
 from typing import Any, Optional, AsyncIterator, Union
 from openai import AsyncOpenAI
 from .base import LLMProvider
-from llm_query.utils import settings
+from llmeasy.utils import settings
 
 class OpenAIProvider(LLMProvider):
     """Provider for OpenAI's GPT models"""

@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from llm_query.providers import OpenAIProvider
+from llmeasy.providers import OpenAIProvider
 
 @pytest.mark.asyncio
 async def test_openai_query(mock_openai_client):

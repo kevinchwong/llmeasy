@@ -1,6 +1,6 @@
 import asyncio
 import json
-from llm_query import LLMQuery
+from llmeasy import LLMEasy
 from dotenv import load_dotenv
 import os
 from templates.claude_templates import (
@@ -18,7 +18,7 @@ if not ANTHROPIC_API_KEY:
 
 async def claude_basic_example():
     """Basic text generation with Claude"""
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY
     )
@@ -42,7 +42,7 @@ async def claude_basic_example():
 
 async def claude_structured_analysis():
     """Example of getting structured JSON analysis"""
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY,
         temperature=0.3
@@ -61,7 +61,7 @@ async def claude_structured_analysis():
 
 async def claude_creative_writing():
     """Example of creative writing with specific constraints"""
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY,
         temperature=0.9
@@ -88,7 +88,7 @@ async def claude_creative_writing():
 
 async def claude_data_extraction():
     """Example of extracting structured data from text"""
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY
     )

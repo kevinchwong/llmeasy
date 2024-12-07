@@ -1,5 +1,5 @@
 import pytest
-from llm_query.templates.template_parser import PromptTemplate
+from llmeasy.templates.template_parser import PromptTemplate
 
 def test_template_substitution():
     template = PromptTemplate("Hello, ${name}!")

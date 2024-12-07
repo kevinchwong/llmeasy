@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from llm_query.providers import ClaudeProvider
+from llmeasy.providers import ClaudeProvider
 from tests.conftest import AsyncIteratorMock
 
 @pytest.mark.asyncio

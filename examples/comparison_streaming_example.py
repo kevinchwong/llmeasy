@@ -1,5 +1,5 @@
 import asyncio
-from llm_query import LLMQuery
+from llmeasy import LLMEasy
 from dotenv import load_dotenv
 import os
 from templates.comparison_templates import TECHNICAL_EXPLANATION_TEMPLATE
@@ -21,7 +21,7 @@ async def main():
         print("\n=== OpenAI Streaming ===")
         print("Topic: Asynchronous Programming in Python")
         
-        openai = LLMQuery(
+        openai = LLMEasy(
             provider='openai',
             api_key=OPENAI_API_KEY
         )
@@ -42,7 +42,7 @@ async def main():
         print("\n=== Claude Streaming ===")
         print("Topic: Functional Programming Concepts")
         
-        claude = LLMQuery(
+        claude = LLMEasy(
             provider='claude',
             api_key=ANTHROPIC_API_KEY
         )

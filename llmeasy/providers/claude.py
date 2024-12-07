@@ -2,7 +2,7 @@ import json
 from typing import Any, Optional, AsyncIterator, Union
 import anthropic
 from .base import LLMProvider
-from llm_query.utils import settings
+from llmeasy.utils import settings
 
 class ClaudeProvider(LLMProvider):
     """Provider for Anthropic's Claude models"""

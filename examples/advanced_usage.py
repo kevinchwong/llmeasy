@@ -1,6 +1,6 @@
 import asyncio
 import os
-from llm_query import LLMQuery
+from llmeasy import LLMEasy
 from dotenv import load_dotenv
 from templates.advanced_templates import (
     CODE_GENERATION_TEMPLATE,
@@ -16,7 +16,7 @@ if not ANTHROPIC_API_KEY:
 
 async def code_generation_example():
     """Example of generating code with specific formatting"""
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY,
         temperature=0.1
@@ -37,7 +37,7 @@ async def code_generation_example():
 
 async def data_analysis_example():
     """Example of analyzing data with structured output"""
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY,
     )
@@ -61,7 +61,7 @@ async def data_analysis_example():
 
 async def chain_of_thought_example():
     """Example of using chain-of-thought prompting"""
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='claude',
         api_key=ANTHROPIC_API_KEY,
     )

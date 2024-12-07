@@ -1,5 +1,5 @@
 import asyncio
-from llm_query import LLMQuery
+from llmeasy import LLMEasy
 from dotenv import load_dotenv
 import os
 from templates.openai_templates import (
@@ -15,7 +15,7 @@ if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY environment variable is not set")
 
 async def openai_basic_example():
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='openai',
         api_key=OPENAI_API_KEY,
         model='gpt-4-turbo-preview'
@@ -37,7 +37,7 @@ async def openai_basic_example():
         print(f"Error in basic example: {e}")
 
 async def openai_json_example():
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='openai',
         api_key=OPENAI_API_KEY
     )
@@ -63,7 +63,7 @@ async def openai_json_example():
         print(f"Error in json example: {e}")
 
 async def openai_comparison_example():
-    llm = LLMQuery(
+    llm = LLMEasy(
         provider='openai',
         api_key=OPENAI_API_KEY,
         temperature=0.3

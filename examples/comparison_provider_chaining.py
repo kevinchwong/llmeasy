@@ -1,6 +1,6 @@
 import asyncio
 import json
-from llm_query import LLMQuery
+from llmeasy import LLMEasy
 from dotenv import load_dotenv
 import os
 from templates.comparison_templates import SUMMARY_TEMPLATE, EXPANSION_TEMPLATE
@@ -18,8 +18,8 @@ if not OPENAI_API_KEY:
 async def main():
     """Example showing how to chain different providers"""
     try:
-        claude = LLMQuery(provider='claude', api_key=ANTHROPIC_API_KEY)
-        openai = LLMQuery(provider='openai', api_key=OPENAI_API_KEY)
+        claude = LLMEasy(provider='claude', api_key=ANTHROPIC_API_KEY)
+        openai = LLMEasy(provider='openai', api_key=OPENAI_API_KEY)
 
         variables = {
             "text": """
