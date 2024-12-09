@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "llmeasy"
-version = "0.1.1"
+version = "0.1.2"
 description = "Easy to use LLM interface"
 authors = ["Kevin Wong <kevinchwong@gmail.com>"]
 license = "Apache License 2.0"
@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "llmeasy"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 openai = "^1.12.0"
 anthropic = "^0.18.1"
 google-generativeai = "^0.3.2"
