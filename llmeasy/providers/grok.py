@@ -14,32 +14,37 @@ class GrokProvider(LLMProvider):
             api_key=api_key,
             base_url="https://api.x.ai/v1"
         )
-        self.model = self.config.model or settings.grok_model or "grok-beta"  # Default to grok-beta
+        self.model = self.config.model or settings.grok_model
 
     async def _generate_response(
         self,
         prompt: str,
+        system: Optional[str] = None,
         stream: bool = False,
+        output_format: Optional[str] = None,
         **kwargs
     ) -> Union[str, AsyncIterator[str]]:
         """Generate response from Grok"""
         try:
+            # Create messages array with system prompt if provided
+            messages = []
+            if system:
+                messages.append({"role": "system", "content": system})
+            else:
+                messages.append({
+                    "role": "system",
+                    "content": "You are Grok, a chatbot inspired by the Hitchhiker's Guide to the Galaxy."
+                })
+            messages.append({"role": "user", "content": prompt})
+            
             # Remove parameters that Grok API doesn't accept
             kwargs.pop('max_tokens', None)
             kwargs.pop('output_format', None)
+            kwargs.pop('system', None)
             
             completion_kwargs = {
                 'model': self.model,
-                'messages': [
-                    {
-                        "role": "system",
-                        "content": "You are Grok, a chatbot inspired by the Hitchhiker's Guide to the Galaxy."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
+                'messages': messages,
                 'max_tokens': self.config.max_tokens,
                 'temperature': self.config.temperature,
                 'stream': stream,
@@ -70,12 +75,11 @@ class GrokProvider(LLMProvider):
 
     def _format_prompt(self, prompt: str, output_format: Optional[str]) -> str:
         """Format prompt with output instructions"""
-        formatted_prompt = prompt
         if output_format == 'json':
-            formatted_prompt += "\nProvide your response in valid JSON format only. Do not include any explanatory text outside the JSON structure."
+            prompt += "\nProvide your response in valid JSON format only. Do not include any explanatory text outside the JSON structure."
         elif output_format:
-            formatted_prompt += f"\nProvide your response in {output_format} format."
-        return formatted_prompt
+            prompt += f"\nProvide your response in {output_format} format."
+        return prompt
 
     def _parse_response(self, response: str, output_format: Optional[str]) -> Any:
         """Parse and validate response"""

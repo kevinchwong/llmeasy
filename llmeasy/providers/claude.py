@@ -11,44 +11,84 @@ class ClaudeProvider(LLMProvider):
         """Initialize Claude provider"""
         super().__init__(api_key, **kwargs)
         self.client = anthropic.AsyncAnthropic(api_key=api_key)
-        self.model = self.config.model or settings.claude_model
+        self.model = kwargs.get('model') or settings.claude_model
 
     async def _generate_response(
         self,
         prompt: str,
+        system: Optional[str] = None,
         stream: bool = False,
-        output_format: Optional[str] = None,
         **kwargs
     ) -> Union[str, AsyncIterator[str]]:
         """Generate response from Claude"""
         try:
-            # Remove parameters that Claude API doesn't accept
-            kwargs.pop('max_tokens', None)
-            kwargs.pop('output_format', None)
+            messages = [{"role": "user", "content": prompt}]
             
-            message = await self.client.messages.create(
+            response = await self.client.messages.create(
                 model=self.model,
                 max_tokens=self.config.max_tokens,
                 temperature=self.config.temperature,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                stream=stream,
-                system="You are a helpful AI assistant. Always provide responses in the requested format.",
-                **kwargs
+                messages=messages,
+                system=system if system else "You are a helpful AI assistant.",
+                stream=stream
             )
             
             if stream:
                 async def response_generator():
-                    async for chunk in message:
-                        if chunk.delta.text:
-                            yield chunk.delta.text
+                    async for chunk in response:
+                        if hasattr(chunk, 'type'):
+                            if chunk.type == 'content_block_delta':
+                                if chunk.delta.text:
+                                    yield chunk.delta.text
                 return response_generator()
             
-            return message.content[0].text
+            return response.content[0].text
+            
+        except Exception as e:
+            raise ValueError(f"Error generating Claude response: {str(e)}")
+
+    async def stream(
+        self,
+        prompt: str,
+        system: Optional[str] = None,
+        output_format: Optional[str] = None,
+        **kwargs
+    ) -> AsyncIterator[str]:
+        """Stream responses from Claude"""
+        try:
+            formatted_prompt = self._format_prompt(prompt, output_format)
+            response_generator = await self._generate_response(
+                prompt=formatted_prompt,
+                system=system,
+                stream=True,
+                **kwargs
+            )
+            async for chunk in response_generator:
+                yield chunk
+        except Exception as e:
+            print(f"Error in Claude stream: {str(e)}")
+            raise
+
+    async def query(
+        self,
+        prompt: str,
+        system: Optional[str] = None,
+        output_format: Optional[str] = None,
+        **kwargs
+    ) -> Any:
+        """Generate complete response from Claude"""
+        try:
+            formatted_prompt = self._format_prompt(prompt, output_format)
+            result = await self._generate_response(
+                prompt=formatted_prompt,
+                system=system,
+                stream=False,
+                **kwargs
+            )
+            
+            if output_format:
+                return self._parse_response(result, output_format)
+            return result
             
         except Exception as e:
             raise ValueError(f"Error generating Claude response: {str(e)}")

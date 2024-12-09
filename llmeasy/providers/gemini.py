@@ -17,17 +17,23 @@ class GeminiProvider(LLMProvider):
     async def _generate_response(
         self,
         prompt: str,
+        system: Optional[str] = None,
         stream: bool = False,
+        output_format: Optional[str] = None,
         **kwargs
     ) -> Union[str, AsyncIterator[str]]:
         """Generate response from Gemini"""
         try:
+            # Combine system prompt and user prompt for Gemini
+            full_prompt = f"{system}\n\n{prompt}" if system else prompt
+            
             # Remove parameters that Gemini API doesn't accept
             kwargs.pop('max_tokens', None)
             kwargs.pop('output_format', None)
+            kwargs.pop('system', None)
             
             response = await self.client.generate_content_async(
-                prompt,
+                full_prompt,
                 generation_config={
                     'temperature': self.config.temperature,
                     'max_output_tokens': self.config.max_tokens,

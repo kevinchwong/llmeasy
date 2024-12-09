@@ -1,0 +1,53 @@
+name: Test Configuration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-config:
+    runs-on: ubuntu-latest
+    
+    env:
+      POETRY_VERSION: "1.7.1"
+      UNIT_TEST_TIMEOUT: "5m"
+      INTEGRATION_TEST_TIMEOUT: "15m"
+      MIN_COVERAGE: "80"
+      API_CALLS_PER_MINUTE: "50"
+      DELAY_BETWEEN_TESTS: "2"
+      MAX_RETRIES: "3"
+      RETRY_DELAY: "5"
+      
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+          
+      - name: Install dependencies
+        run: poetry install
+        
+      - name: Run tests with configuration
+        run: |
+          poetry run pytest tests/ \
+            --timeout=${{ env.UNIT_TEST_TIMEOUT }} \
+            --cov=llmeasy \
+            --cov-fail-under=${{ env.MIN_COVERAGE }} \
+            -v

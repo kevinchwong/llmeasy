@@ -1,91 +1,49 @@
 import asyncio
 import os
-from llmeasy import LLMEasy
 from dotenv import load_dotenv
-from templates.advanced_templates import (
-    CODE_GENERATION_TEMPLATE,
-    DATA_ANALYSIS_TEMPLATE,
-    CHAIN_OF_THOUGHT_TEMPLATE
-)
-
-load_dotenv()
-
-ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
-if not ANTHROPIC_API_KEY:
-    raise ValueError("ANTHROPIC_API_KEY environment variable is not set")
-
-async def code_generation_example():
-    """Example of generating code with specific formatting"""
-    llm = LLMEasy(
-        provider='claude',
-        api_key=ANTHROPIC_API_KEY,
-        temperature=0.1
-    )
-    
-    variables = {
-        "task": "validates if a string is a valid email address",
-        "function_name": "validate_email"
-    }
-    
-    response = await llm.query(
-        template=CODE_GENERATION_TEMPLATE,
-        variables=variables,
-        output_format='python'
-    )
-    
-    print("Generated Code:", response)
-
-async def data_analysis_example():
-    """Example of analyzing data with structured output"""
-    llm = LLMEasy(
-        provider='claude',
-        api_key=ANTHROPIC_API_KEY,
-    )
-    
-    variables = {
-        "sales_data": """
-        Product A: $1200 (Q1), $1500 (Q2), $1800 (Q3)
-        Product B: $800 (Q1), $1000 (Q2), $950 (Q3)
-        Product C: $2000 (Q1), $1800 (Q2), $2200 (Q3)
-        """
-    }
-    
-    response = await llm.query(
-        template=DATA_ANALYSIS_TEMPLATE,
-        variables=variables,
-        output_format='json',
-        max_tokens=2000
-    )
-    
-    print("Analysis Results:", response)
-
-async def chain_of_thought_example():
-    """Example of using chain-of-thought prompting"""
-    llm = LLMEasy(
-        provider='claude',
-        api_key=ANTHROPIC_API_KEY,
-    )
-    
-    variables = {
-        "problem": "If a train travels 120 km in 2 hours with a 15-minute stop, what was its actual average speed while moving?"
-    }
-    
-    response = await llm.query(
-        template=CHAIN_OF_THOUGHT_TEMPLATE,
-        variables=variables
-    )
-    
-    print("Step-by-step Solution:", response)
+from llmeasy import LLMEasy
 
 async def main():
-    print("=== Code Generation Example ===")
-    await code_generation_example()
+    """Advanced usage examples demonstrating various LLMEasy features"""
+    load_dotenv()
     
-    print("\n=== Data Analysis Example ===")
-    await data_analysis_example()
+    llm = LLMEasy(
+        provider='claude',
+        api_key=os.getenv('ANTHROPIC_API_KEY')
+    )
     
-    print("\n=== Chain of Thought Example ===")
-    await chain_of_thought_example()
+    # Process multiple queries sequentially for now
+    prompts = [
+        "What is Python?",
+        "What is JavaScript?",
+        "What is Java?"
+    ]
+    
+    print("\nSequential Processing Results:")
+    for prompt in prompts:
+        response = await llm.query(
+            prompt=prompt,
+            system="You are a programming expert.",
+            temperature=0.7
+        )
+        print(f"\nResponse for '{prompt}':\n{response}")
+        
+    # Streaming example
+    print("\nStreaming Response:")
+    async for chunk in llm.stream(
+        prompt="Explain microservices architecture",
+        system="You are a software architect."
+    ):
+        print(chunk, end="", flush=True)
+        
+    # JSON response example
+    result = await llm.query(
+        prompt="List 3 programming languages and their key features",
+        system="You are a programming expert.",
+        response_format="json"
+    )
+    print("\n\nJSON Response:")
+    print(result)
 
 if __name__ == "__main__":
     asyncio.run(main()) 

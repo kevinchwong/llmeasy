@@ -16,18 +16,27 @@ class OpenAIProvider(LLMProvider):
     async def _generate_response(
         self,
         prompt: str,
+        system: Optional[str] = None,
         stream: bool = False,
         output_format: Optional[str] = None,
         **kwargs
     ) -> Union[str, AsyncIterator[str]]:
         """Generate response from OpenAI"""
         try:
-            # Remove max_tokens from kwargs if it exists to avoid duplicate argument
+            # Create messages array with system prompt if provided
+            messages = []
+            if system:
+                messages.append({"role": "system", "content": system})
+            messages.append({"role": "user", "content": prompt})
+            
+            # Remove parameters that OpenAI API doesn't accept
             kwargs.pop('max_tokens', None)
+            kwargs.pop('output_format', None)
+            kwargs.pop('system', None)  # Remove system from kwargs since we handle it separately
             
             completion_kwargs = {
                 'model': self.model,
-                'messages': [{"role": "user", "content": prompt}],
+                'messages': messages,
                 'max_tokens': self.config.max_tokens,
                 'temperature': self.config.temperature,
                 'stream': stream,

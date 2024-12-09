@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, AsyncIterator, Union
+from typing import Any, Optional, AsyncIterator, Union
 from pydantic import BaseModel, ConfigDict
 
 class ProviderConfig(BaseModel):
@@ -25,39 +25,20 @@ class LLMProvider(ABC):
 
     async def query(
         self, 
-        prompt: str, 
+        prompt: str,
+        system: Optional[str] = None,
         output_format: Optional[str] = None,
-        stream: bool = False,
         **kwargs
     ) -> Any:
-        """
-        Send query to LLM provider
-        
-        Args:
-            prompt: The formatted prompt to send
-            output_format: Expected output format (json, string, etc)
-            stream: Whether to stream the response
-            **kwargs: Additional provider-specific parameters
-            
-        Returns:
-            Response from the LLM provider
-        """
-        # Format prompt with output instructions
+        """Send query to LLM provider"""
         formatted_prompt = self._format_prompt(prompt, output_format)
-        
-        # Get response from provider
         response = await self._generate_response(
-            formatted_prompt,
-            stream=stream,
+            prompt=formatted_prompt,
+            system=system,
             output_format=output_format,
             **kwargs
         )
         
-        # Handle streaming response
-        if stream:
-            return response
-            
-        # Validate and parse response
         if not self.validate_response(response, output_format):
             raise ValueError(f"Response does not match expected {output_format} format")
             
@@ -66,16 +47,29 @@ class LLMProvider(ABC):
     async def stream(
         self,
         prompt: str,
+        system: Optional[str] = None,
+        output_format: Optional[str] = None,
         **kwargs
     ) -> AsyncIterator[str]:
         """Stream responses from the LLM provider"""
-        return await self._generate_response(prompt, stream=True, **kwargs)
+        formatted_prompt = self._format_prompt(prompt, output_format)
+        generator = await self._generate_response(
+            prompt=formatted_prompt,
+            system=system,
+            stream=True,
+            output_format=output_format,
+            **kwargs
+        )
+        async for chunk in generator:
+            yield chunk
 
     @abstractmethod
     async def _generate_response(
         self,
         prompt: str,
+        system: Optional[str] = None,
         stream: bool = False,
+        output_format: Optional[str] = None,
         **kwargs
     ) -> Union[str, AsyncIterator[str]]:
         """Internal method to generate responses"""
