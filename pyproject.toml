@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "llmeasy"
-version = "0.1.4"
+version = "0.1.5"
 description = "Easy to use LLM interface"
 authors = ["Kevin Wong <kevinchwong@gmail.com>"]
 license = "Apache License 2.0"
