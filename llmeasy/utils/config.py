@@ -2,6 +2,10 @@ from typing import Optional, Dict, Any
 import yaml
 import os
 from dataclasses import dataclass, asdict
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 @dataclass
 class LLMSettings:
@@ -138,3 +142,96 @@ settings = LLMSettings()
 default_config = ConfigManager()
 if default_config.settings:
     settings = default_config.settings
+
+def validate_config(config: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Validate configuration parameters
+    
+    Args:
+        config: Dictionary containing configuration parameters
+        
+    Returns:
+        Validated configuration dictionary
+        
+    Raises:
+        ValueError: If configuration is invalid
+    """
+    # Validate API key
+    if 'api_key' not in config or not config['api_key']:
+        raise ValueError("API key is required")
+        
+    # Validate provider if specified
+    if 'provider' in config:
+        provider = config['provider'].lower()
+        valid_providers = {'openai', 'claude', 'mistral', 'gemini', 'grok'}
+        if provider not in valid_providers:
+            raise ValueError(f"Invalid provider. Must be one of: {', '.join(valid_providers)}")
+            
+        # Validate model if specified
+        if 'model' in config:
+            model = config['model']
+            # Provider-specific model validation
+            if provider == 'openai':
+                valid_models = {'gpt-4', 'gpt-4-turbo-preview', 'gpt-3.5-turbo'}
+                if model not in valid_models:
+                    raise ValueError(f"Invalid OpenAI model. Must be one of: {', '.join(valid_models)}")
+            elif provider == 'claude':
+                valid_models = {'claude-3-opus-20240229', 'claude-3-sonnet-20240229'}
+                if model not in valid_models:
+                    raise ValueError(f"Invalid Claude model. Must be one of: {', '.join(valid_models)}")
+            elif provider == 'mistral':
+                valid_models = {'mistral-tiny', 'mistral-small', 'mistral-medium'}
+                if model not in valid_models:
+                    raise ValueError(f"Invalid Mistral model. Must be one of: {', '.join(valid_models)}")
+    
+    # Validate temperature if specified
+    if 'temperature' in config:
+        temp = config['temperature']
+        if not isinstance(temp, (int, float)) or temp < 0 or temp > 1:
+            raise ValueError("Temperature must be a float between 0 and 1")
+            
+    # Validate max_tokens if specified
+    if 'max_tokens' in config:
+        tokens = config['max_tokens']
+        if not isinstance(tokens, int) or tokens < 1:
+            raise ValueError("max_tokens must be a positive integer")
+            
+    # Set default values for optional parameters
+    defaults = {
+        'temperature': 0.7,
+        'max_tokens': 1000,
+        'timeout': 30,
+        'retry_attempts': 2
+    }
+    
+    for key, value in defaults.items():
+        if key not in config:
+            config[key] = value
+            
+    return config
+
+def get_api_key(provider: str) -> Optional[str]:
+    """Get API key from environment variables"""
+    key_mapping = {
+        'openai': 'OPENAI_API_KEY',
+        'claude': 'ANTHROPIC_API_KEY',
+        'mistral': 'MISTRAL_API_KEY',
+        'gemini': 'GOOGLE_API_KEY',
+        'grok': 'GROK_API_KEY'
+    }
+    
+    if provider not in key_mapping:
+        return None
+        
+    return os.getenv(key_mapping[provider])
+
+def get_default_model(provider: str) -> str:
+    """Get default model for provider"""
+    defaults = {
+        'openai': 'gpt-3.5-turbo',
+        'claude': 'claude-3-sonnet-20240229',
+        'mistral': 'mistral-medium',
+        'gemini': 'gemini-pro',
+        'grok': 'grok-1'
+    }
+    return defaults.get(provider, '')

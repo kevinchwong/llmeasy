@@ -1,6 +1,6 @@
 import pytest
 from llmeasy import LLMEasy
-from tests.integration.test_utils import log_test_failure, cleanup_provider
+from integration.test_utils import log_test_failure, cleanup_provider
 import json
 import logging
 

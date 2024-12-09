@@ -2,7 +2,7 @@ import pytest
 from llmeasy import LLMEasy
 import asyncio
 import json
-from tests.integration.test_utils import log_test_failure, cleanup_provider
+from integration.test_utils import log_test_failure, cleanup_provider
 import logging
 
 logger = logging.getLogger(__name__)
