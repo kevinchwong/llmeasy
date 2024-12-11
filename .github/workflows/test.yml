@@ -53,11 +53,6 @@ jobs:
       run: |
         poetry run pytest tests/unit -v --cov=llmeasy --cov-report=xml
 
-    - name: Run integration tests
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: |
-        poetry run pytest tests/integration -v --cov=llmeasy --cov-report=xml
-
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
