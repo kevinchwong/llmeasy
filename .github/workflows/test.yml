@@ -51,4 +51,13 @@ jobs:
 
     - name: Run unit tests
       run: |
-        poetry run pytest tests/unit -v --cov=llmeasy --cov-report=xml
+        poetry run pytest tests/unit -v --cov=llmeasy --cov-report=xml --timeout=300
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
+        retries: 3
+        retry_delay: 60
